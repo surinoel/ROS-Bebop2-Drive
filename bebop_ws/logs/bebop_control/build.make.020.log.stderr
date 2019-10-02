@@ -1,0 +1,14 @@
+In file included from [01m[K/opt/ros/kinetic/include/ros/subscription_callback_helper.h:35:0[m[K,
+                 from [01m[K/opt/ros/kinetic/include/ros/subscriber.h:33[m[K,
+                 from [01m[K/opt/ros/kinetic/include/ros/node_handle.h:33[m[K,
+                 from [01m[K/opt/ros/kinetic/include/ros/ros.h:45[m[K,
+                 from [01m[K/home/nim/bebop_ws/src/bebop_autonomy/bebop_control/src/bebop_control.cpp:1[m[K:
+/opt/ros/kinetic/include/ros/parameter_adapter.h: In instantiation of ‘[01m[Kstatic ros::ParameterAdapter<M>::Parameter ros::ParameterAdapter<M>::getParameter(const Event&) [with M = sensor_msgs::NavSatFix_<std::allocator<void> >&; ros::ParameterAdapter<M>::Parameter = sensor_msgs::NavSatFix_<std::allocator<void> >&; ros::ParameterAdapter<M>::Event = ros::MessageEvent<const sensor_msgs::NavSatFix_<std::allocator<void> > >; typename boost::remove_reference<typename boost::remove_const<M>::type>::type = sensor_msgs::NavSatFix_<std::allocator<void> >][m[K’:
+[01m[K/opt/ros/kinetic/include/ros/subscription_callback_helper.h:144:48:[m[K   required from ‘[01m[Kvoid ros::SubscriptionCallbackHelperT<P, Enabled>::call(ros::SubscriptionCallbackHelperCallParams&) [with P = sensor_msgs::NavSatFix_<std::allocator<void> >&; Enabled = void][m[K’
+[01m[K/home/nim/bebop_ws/src/bebop_autonomy/bebop_control/src/bebop_control.cpp:41:1:[m[K   required from here
+[01m[K/opt/ros/kinetic/include/ros/parameter_adapter.h:78:30:[m[K [01;31m[Kerror: [m[Kbinding ‘[01m[Kconst sensor_msgs::NavSatFix_<std::allocator<void> >[m[K’ to reference of type ‘[01m[Kros::ParameterAdapter<sensor_msgs::NavSatFix_<std::allocator<void> >&>::Parameter {aka sensor_msgs::NavSatFix_<std::allocator<void> >&}[m[K’ discards qualifiers
+     return *event.getMessage();
+[01;32m[K                              ^[m[K
+make[2]: *** [CMakeFiles/bebop_control_test.dir/src/bebop_control.cpp.o] Error 1
+make[1]: *** [CMakeFiles/bebop_control_test.dir/all] Error 2
+make: *** [all] Error 2

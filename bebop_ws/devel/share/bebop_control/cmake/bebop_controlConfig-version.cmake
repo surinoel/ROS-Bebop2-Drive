@@ -1,0 +1,1 @@
+/home/nim/bebop_ws/devel/.private/bebop_control/share/bebop_control/cmake/bebop_controlConfig-version.cmake

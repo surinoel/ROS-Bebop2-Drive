@@ -1,0 +1,13 @@
+[01m[K/home/nim/bebop_ws/src/bebop_autonomy/bebop_control/src/bebop_control.cpp:[m[K In function ‘[01m[Kvoid drone_GPS(const ConstPtr&)[m[K’:
+[01m[K/home/nim/bebop_ws/src/bebop_autonomy/bebop_control/src/bebop_control.cpp:84:2:[m[K [01;31m[Kerror: [m[K‘[01m[Klatitude_gap[m[K’ was not declared in this scope
+  latitude_gap = latitude - current_position.latitude;
+[01;32m[K  ^[m[K
+[01m[K/home/nim/bebop_ws/src/bebop_autonomy/bebop_control/src/bebop_control.cpp:85:2:[m[K [01;31m[Kerror: [m[K‘[01m[Klongitude_gap[m[K’ was not declared in this scope
+  longitude_gap = longitude - current_position.longitude;
+[01;32m[K  ^[m[K
+[01m[K/home/nim/bebop_ws/src/bebop_autonomy/bebop_control/src/bebop_control.cpp:86:2:[m[K [01;31m[Kerror: [m[K‘[01m[Kaltitude_gap[m[K’ was not declared in this scope
+  altitude_gap = altitude - current_position.altitude;
+[01;32m[K  ^[m[K
+make[2]: *** [CMakeFiles/bebop_control_test.dir/src/bebop_control.cpp.o] Error 1
+make[1]: *** [CMakeFiles/bebop_control_test.dir/all] Error 2
+make: *** [all] Error 2

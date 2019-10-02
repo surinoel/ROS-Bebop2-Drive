@@ -1,0 +1,13 @@
+[01m[K/home/nim/bebop_ws/src/bebop_autonomy/bebop_control/src/bebop_control.cpp:79:22:[m[K [01;31m[Kerror: [m[K‘[01m[KArdrone3PilotingStatePositionChanged[m[K’ does not name a type
+ void drone_GPS(const Ardrone3PilotingStatePositionChanged::ConstPtr &GPS){
+[01;32m[K                      ^[m[K
+[01m[K/home/nim/bebop_ws/src/bebop_autonomy/bebop_control/src/bebop_control.cpp:79:69:[m[K [01;31m[Kerror: [m[Kexpected unqualified-id before ‘[01m[K&[m[K’ token
+ void drone_GPS(const Ardrone3PilotingStatePositionChanged::ConstPtr &GPS){
+[01;32m[K                                                                     ^[m[K
+[01m[K/home/nim/bebop_ws/src/bebop_autonomy/bebop_control/src/bebop_control.cpp:79:69:[m[K [01;31m[Kerror: [m[Kexpected ‘[01m[K)[m[K’ before ‘[01m[K&[m[K’ token
+[01m[K/home/nim/bebop_ws/src/bebop_autonomy/bebop_control/src/bebop_control.cpp:79:70:[m[K [01;31m[Kerror: [m[Kexpected initializer before ‘[01m[KGPS[m[K’
+ void drone_GPS(const Ardrone3PilotingStatePositionChanged::ConstPtr &GPS){
+[01;32m[K                                                                      ^[m[K
+make[2]: *** [CMakeFiles/bebop_control_test.dir/src/bebop_control.cpp.o] Error 1
+make[1]: *** [CMakeFiles/bebop_control_test.dir/all] Error 2
+make: *** [all] Error 2
