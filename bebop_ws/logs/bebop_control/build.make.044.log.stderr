@@ -1,0 +1,5 @@
+[01m[K/home/nim/bebop_ws/src/bebop_autonomy/bebop_control/src/bebop_control.cpp:5:41:[m[K [01;31m[Kfatal error: [m[Kbebop_control/bebop_control.h: No such file or directory
+compilation terminated.
+make[2]: *** [CMakeFiles/bebop_control_test.dir/src/bebop_control.cpp.o] Error 1
+make[1]: *** [CMakeFiles/bebop_control_test.dir/all] Error 2
+make: *** [all] Error 2

@@ -1,0 +1,6 @@
+devel_space: /home/nim/bebop_ws/devel
+install: false
+install_space: /home/nim/bebop_ws/install
+profile: default
+source_space: /home/nim/bebop_ws/src
+workspace: /home/nim/bebop_ws
