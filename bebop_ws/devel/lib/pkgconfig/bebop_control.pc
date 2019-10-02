@@ -1,1 +1,0 @@
-/home/nim/bebop_ws/devel/.private/bebop_control/lib/pkgconfig/bebop_control.pc

@@ -1,9 +1,0 @@
-[01m[K/home/nim/bebop_ws/src/bebop_autonomy/bebop_control/src/bebop_control.cpp:70:6:[m[K [01;31m[Kerror: [m[Kredefinition of ‘[01m[Kint count[m[K’
- }int count;
-[01;32m[K      ^[m[K
-[01m[K/home/nim/bebop_ws/src/bebop_autonomy/bebop_control/src/bebop_control.cpp:13:5:[m[K [01;36m[Knote: [m[K‘[01m[Kint count[m[K’ previously declared here
- int count;
-[01;32m[K     ^[m[K
-make[2]: *** [CMakeFiles/bebop_control_test.dir/src/bebop_control.cpp.o] Error 1
-make[1]: *** [CMakeFiles/bebop_control_test.dir/all] Error 2
-make: *** [all] Error 2
