@@ -1,0 +1,6 @@
+set(bebop_control_SETUP_PY_VERSION "0.0.0")
+set(bebop_control_SETUP_PY_SCRIPTS "")
+set(bebop_control_SETUP_PY_PACKAGES "turtlesim_move1")
+set(bebop_control_SETUP_PY_PACKAGE_DIRS "src/turtlesim_move1")
+set(bebop_control_SETUP_PY_MODULES "")
+set(bebop_control_SETUP_PY_MODULE_DIRS "")

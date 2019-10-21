@@ -1,0 +1,8 @@
+prefix=/home/nim/catkin_ws/devel
+
+Name: bebop_tools
+Description: Description of bebop_tools
+Version: 0.7.0
+Cflags: 
+Libs: -L/home/nim/catkin_ws/devel/lib 
+Requires: bebop_msgs

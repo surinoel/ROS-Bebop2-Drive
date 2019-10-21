@@ -1,0 +1,8 @@
+prefix=/home/nim/catkin_ws/devel
+
+Name: bebop_control
+Description: Description of bebop_control
+Version: 0.0.0
+Cflags: -I/home/nim/catkin_ws/src/bebo_control/include
+Libs: -L/home/nim/catkin_ws/devel/lib -lbebop_control
+Requires: bebop_msgs geometry_msgs roscpp rospy sensor_msgs std_msgs
