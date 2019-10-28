@@ -109,7 +109,7 @@ catkin_python_setup()
 catkin_package(
  INCLUDE_DIRS include
  LIBRARIES bebop_control
- CATKIN_DEPENDS bebop_msgs geometry_msgs roscpp rospy sensor_msgs std_msgs #message_generation 
+ CATKIN_DEPENDS bebop_msgs geometry_msgs roscpp rospy sensor_msgs std_msgs #message_generation
 #  DEPENDS system_lib
 )
 
@@ -154,9 +154,9 @@ include
 #   ${catkin_LIBRARIES}
 # )
 
-add_executable(bebop_test src/test.cpp src/main.cpp)
-add_dependencies(bebop_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(bebop_test
+add_executable(bebop_control src/main.cpp src/control.cpp)
+add_dependencies(bebop_control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(bebop_control
   ${catkin_LIBRARIES}
 )
 

@@ -1,7 +1,7 @@
 // http://egloos.zum.com/metashower/v/313035
 
 #include <math.h>
-#include "test.h"
+#include "control.h"
 
 double calDistance(double lat1, double lon1, double lat2, double lon2){
 
@@ -18,4 +18,3 @@ double calDistance(double lat1, double lon1, double lat2, double lon2){
 
     return dist;
 }
-
