@@ -21,9 +21,9 @@ private:
   ros::Subscriber subscribeRotation;
 
   sensor_msgs::NavSatFix homeGPSData;                                   // subscribe home GPS data
-  bebop_msgs::Ardrone3PilotingStatePositionChanged droneGPSData, prev_droneGPSData;        // subscribe GPS data of the drone
+  bebop_msgs::Ardrone3PilotingStatePositionChanged droneGPSData, prev_droneGPSData, goalGPSData;        // subscribe GPS data of the drone
   bebop_msgs::Ardrone3PilotingStateAttitudeChanged droneRotationData, prev_droneRotationData;   // subscribe 'roll', 'pitch', 'yaw' data of the drone
-  
+
 public:
   ros::Publisher pub_[4];   // publish 'takeoff', 'land', 'emergency', 'move' commands
   geometry_msgs::Twist droneSpeed, prev_droneSpeed;
@@ -41,6 +41,7 @@ public:
   void returnHome(ros::Publisher&);
   void controlGPS(ros::Publisher&);
   void controlGPS_yawAndMove(ros::Publisher&);
+  void getGPSDataOfGoal();
 };
 
 extern CONTROL *bebop_control;

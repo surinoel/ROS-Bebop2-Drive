@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(bebop_track)
+project(bebop_control)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -9,22 +9,22 @@ project(bebop_track)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   bebop_msgs
-  darknet_ros_msgs
   geometry_msgs
   message_generation
   roscpp
-  std_msgs
+  rospy
   sensor_msgs
+  std_msgs
 )
 
 ## System dependencies are found with CMake's conventions
-find_package(Boost REQUIRED COMPONENTS system)
+# find_package(Boost REQUIRED COMPONENTS system)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-# catkin_python_setup()
+catkin_python_setup()
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -50,12 +50,12 @@ find_package(Boost REQUIRED COMPONENTS system)
 ##   * uncomment the generate_messages entry below
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
-#Generate messages in the 'msg' folder
-#add_message_files(
+## Generate messages in the 'msg' folder
+# add_message_files(
 #   FILES
-#   Ardrone3PilotingStatePositionChanged.msg
-#   Ardrone3PilotingStateAttitudeChanged.msg
-#)
+#   Message1.msg
+#   Message2.msg
+# )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -72,7 +72,10 @@ find_package(Boost REQUIRED COMPONENTS system)
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(DEPENDENCIES bebop_msgs darknet_ros_msgs geometry_msgs std_msgs sensor_msgs)
+# generate_messages(
+#   DEPENDENCIES
+#   bebop_msgs#   geometry_msgs#   sensor_msgs#   std_msgs
+# )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -104,9 +107,9 @@ generate_messages(DEPENDENCIES bebop_msgs darknet_ros_msgs geometry_msgs std_msg
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-INCLUDE_DIRS include
-LIBRARIES bebop_track
-CATKIN_DEPENDS bebop_msgs darknet_ros_msgs geometry_msgs roscpp std_msgs sensor_msgs
+ INCLUDE_DIRS include
+ LIBRARIES bebop_control
+ CATKIN_DEPENDS bebop_msgs geometry_msgs roscpp rospy sensor_msgs std_msgs #message_generation
 #  DEPENDS system_lib
 )
 
@@ -116,11 +119,14 @@ CATKIN_DEPENDS bebop_msgs darknet_ros_msgs geometry_msgs roscpp std_msgs sensor_
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(include ${catkin_INCLUDE_DIRS})
+include_directories(
+include
+  ${catkin_INCLUDE_DIRS}
+)
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/bebop_track.cpp
+#   src/${PROJECT_NAME}/bebop_control.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -131,17 +137,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(bebop_track_node src/track.cpp src/bebop_track.cpp include/bebop_track/bebop_track.h)
-add_dependencies(bebop_track_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(bebop_track_node ${catkin_LIBRARIES})
-
-add_executable(bebop_teleop_node src/teleop.cpp src/bebop_teleop.cpp include/bebop_track/bebop_teleop.h)
-add_dependencies(bebop_teleop_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(bebop_teleop_node ${catkin_LIBRARIES})
-
-add_executable(bebop_gps_node src/gps.cpp src/bebop_gps.cpp include/bebop_track/bebop_gps.h)
-add_dependencies(bebop_gps_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(bebop_gps_node ${catkin_LIBRARIES})
+# add_executable(${PROJECT_NAME}_node src/bebop_control_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -151,10 +147,18 @@ target_link_libraries(bebop_gps_node ${catkin_LIBRARIES})
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-
+# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
+# target_link_libraries(${PROJECT_NAME}_node
+#   ${catkin_LIBRARIES}
+# )
 
+add_executable(bebop_control src/main.cpp src/control.cpp)
+add_dependencies(bebop_control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(bebop_control
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##
@@ -170,11 +174,18 @@ target_link_libraries(bebop_gps_node ${catkin_LIBRARIES})
 #   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
 
-## Mark executables and/or libraries for installation
-# install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_node
+## Mark executables for installation
+## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
+# install(TARGETS ${PROJECT_NAME}_node
+#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# )
+
+## Mark libraries for installation
+## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_libraries.html
+# install(TARGETS ${PROJECT_NAME}
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+#   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
 # )
 
 ## Mark cpp header files for installation
@@ -196,7 +207,7 @@ target_link_libraries(bebop_gps_node ${catkin_LIBRARIES})
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_bebop_track.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_bebop_control.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
