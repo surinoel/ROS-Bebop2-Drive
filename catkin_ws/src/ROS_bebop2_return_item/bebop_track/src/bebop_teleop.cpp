@@ -1,7 +1,6 @@
 #include <bebop_track/bebop_teleop.h>
 
 
-
 const char* BebopKeyBoardController::Interface[] = {
         "+-----------------------------------------------------+",
         "|                 Control your Bebop                  |",
@@ -11,7 +10,6 @@ const char* BebopKeyBoardController::Interface[] = {
         "|                                                     |",
         "| throttle UP / DOWN : W / S                          |",
         "| rotation CCW / CW  : A / D                          |",
-        "| camera ?? / ??     : R / F                          |",
         "| FORWARD / BACKWARD : 8 / 5                          |",
         "| LEFT / RIGHT       : 4 / 6                          |",
         "| TAKE OFF / LAND    : Spacebar                       |",
@@ -29,7 +27,7 @@ const char* BebopKeyBoardController::gpsInterface[] = {
         "|                                                     |",
         "|  Go Home : H                                        |",
         "|  Go entered coordinates : C                         |",
-        "|                                                     |",
+        "|  Return item : R                                    |",
         "|                                                     |",
         "|                                                     |",
         "|                                                     |",
@@ -54,13 +52,15 @@ void BebopKeyBoardController::_printInterface()
     _nodeHandle.getParam(home_gps_longitude_key, home_gps_longitude);
     _nodeHandle.getParam(drone_gps_latitude_key, drone_gps_latitude);
     _nodeHandle.getParam(drone_gps_longitude_key, drone_gps_longitude);
+    _nodeHandle.getParam(drone_gps_altitude_key, drone_gps_altitude);
     int result = system("clear");
-    for(int i = 0; i < 17; ++i)
+    for(int i = 0; i < 16; ++i)
         std::cout << Interface[i] << std::endl;
     std::cout << "[status] Takeoff : "<< ((_isTakeOff) ? "ON" : "OFF")
     << "\tTracking Mode : " << (_isTracking ? "ON" : "OFF") << std::endl;
     std::cout << "[Home GPS] latitude : " << home_gps_latitude << " ,longitude : " << home_gps_longitude << std::endl;
-    std::cout << "[Drome GPS] latitude : " << drone_gps_latitude << " ,longitude : " << drone_gps_longitude << std::endl;
+    std::cout << "[Drone GPS] latitude : " << drone_gps_latitude << " ,longitude : " << drone_gps_longitude << std::endl;
+    std::cout << "[Droe GPS] altitude : " << drone_gps_altitude << std::endl;
     std::cout << "[Speed value] : " << _speedValue << std::endl;
     std::cout << "[Speed Increase Value] : " << _speedIncreaseValue << std::endl;
 }
@@ -172,7 +172,7 @@ void BebopKeyBoardController::Control()
         {
             _printInterface();
         }
-        
+
         key = _getKey();
         if(!_isTakeOff && (key == 'q' || key == 'Q'))
             break;
@@ -180,7 +180,7 @@ void BebopKeyBoardController::Control()
         switch(key)
         {
             case ' ':
-                _isTakeOff ? _land() : _takeoff();  
+                _isTakeOff ? _land() : _takeoff();
                 break;
             case 'P':
             case 'p':
@@ -231,17 +231,30 @@ void BebopKeyBoardController::Control()
             case 'C':
             case 'c':
                 if(_isGPSmode)
-                {       
+                {
                     _printGpsInterface();
                     double go_latitude = 0.0;
                     double go_longitude = 0.0;
-                    
+
                     std::cout << "Enter go coordinates..." << std::endl;
                     std::cin >> go_latitude;
                     std::cin >> go_longitude;
                     _nodeHandle.setParam(go_latitude_key, go_latitude);
                     _nodeHandle.setParam(go_longitude_key, go_longitude);
-                    _nodeHandle.setParam(go_entered_coordinates_key, goEnteredcoordinates);                    
+                    _nodeHandle.setParam(go_entered_coordinates_key, goEnteredcoordinates);
+                }
+                break;
+            case 'R':
+            case 'r':
+                if(_isGPSmode)
+                {
+                    _printGpsInterface();
+                    int select_place = 0;
+                    std::cout << "Select return item place..." << std::endl;
+                    std::cout << "1. 101 ho, 2. 102 ho, 3. 103 ho, 4. 104 ho, 5. 105 ho" << std::endl;
+                    std::cin >> select_place;
+                    _nodeHandle.setParam(select_place_key, select_place);
+                    _nodeHandle.setParam(go_place_key, goPlace);
                 }
                 break;
             case '+':
@@ -267,9 +280,6 @@ void BebopKeyBoardController::Control()
             case 'D':
             case 'd':
                 _move(rotation, CW);
-                break;
-            case 'R':
-            case 'r':
                 break;
             case 'F':
             case 'f':

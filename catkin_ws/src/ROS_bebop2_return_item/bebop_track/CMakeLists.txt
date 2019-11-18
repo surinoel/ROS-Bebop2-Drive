@@ -8,13 +8,15 @@ project(bebop_track)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  ar_track_alvar_msgs
   bebop_msgs
-  darknet_ros_msgs
   geometry_msgs
   message_generation
   roscpp
+  rospy
   std_msgs
   sensor_msgs
+  #darknet_ros_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -24,7 +26,7 @@ find_package(Boost REQUIRED COMPONENTS system)
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-# catkin_python_setup()
+catkin_python_setup()
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -72,7 +74,8 @@ find_package(Boost REQUIRED COMPONENTS system)
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(DEPENDENCIES bebop_msgs darknet_ros_msgs geometry_msgs std_msgs sensor_msgs)
+generate_messages(DEPENDENCIES ar_track_alvar_msgs bebop_msgs geometry_msgs std_msgs sensor_msgs)
+#darknet_ros_msgs
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -106,9 +109,10 @@ generate_messages(DEPENDENCIES bebop_msgs darknet_ros_msgs geometry_msgs std_msg
 catkin_package(
 INCLUDE_DIRS include
 LIBRARIES bebop_track
-CATKIN_DEPENDS bebop_msgs darknet_ros_msgs geometry_msgs roscpp std_msgs sensor_msgs
+CATKIN_DEPENDS ar_track_alvar_msgs bebop_msgs geometry_msgs roscpp rospy std_msgs sensor_msgs
 #  DEPENDS system_lib
 )
+#darknet_ros_msgs
 
 ###########
 ## Build ##
@@ -142,6 +146,10 @@ target_link_libraries(bebop_teleop_node ${catkin_LIBRARIES})
 add_executable(bebop_gps_node src/gps.cpp src/bebop_gps.cpp include/bebop_track/bebop_gps.h)
 add_dependencies(bebop_gps_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(bebop_gps_node ${catkin_LIBRARIES})
+
+add_executable(bebop_ar_track_node src/ar_track.cpp src/bebop_ar_track.cpp include/bebop_track/bebop_ar_track.h)
+add_dependencies(bebop_ar_track_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(bebop_ar_track_node ${catkin_LIBRARIES})
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the

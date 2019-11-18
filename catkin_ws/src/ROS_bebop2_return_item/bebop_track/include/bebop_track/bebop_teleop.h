@@ -28,7 +28,8 @@ const bool land = false;
 const bool goHome = true;
 const bool endGoHome = false;
 const bool goEnteredcoordinates = true;
-const bool endGoEnteredcoordinates = false;
+//const bool endGoEnteredcoordinates = false;
+const bool goPlace = true;
 
 /*파라미터 키 이름*/
 const std::string gps_key = "/bebop/gps";
@@ -39,11 +40,13 @@ const std::string home_gps_latitude_key = "/bebop/homegps/latitude";
 const std::string home_gps_longitude_key = "/bebop/homegps/longitude";
 const std::string drone_gps_latitude_key = "/bebop/dronegps/latitude";
 const std::string drone_gps_longitude_key = "/bebop/dronegps/longitude";
+const std::string drone_gps_altitude_key = "/bebop/dronegps/altitude";
 const std::string go_home_key = "/bebop/gohome";
 const std::string go_entered_coordinates_key = "/bebop/goenteredcoordinates";
 const std::string go_latitude_key = "/bebop/go/latitude";
 const std::string go_longitude_key = "/bebop/go/longitude";
-
+const std::string select_place_key = "/bebop/select/place";
+const std::string go_place_key = "/bebop/go/place";
 
 class BebopKeyBoardController
 {
@@ -63,15 +66,16 @@ private:
     bool _isTracking;
     bool _isGPS;
     bool _isGPSmode;
-    
+
     static const char* Interface[];
     static const char* gpsInterface[];
-    
+
     double home_gps_latitude;
     double home_gps_longitude;
     double drone_gps_latitude;
     double drone_gps_longitude;
-    
+    double drone_gps_altitude;
+
     void _printInterface();
     void _printGpsInterface();
     void _move(double& value, int orientation);
