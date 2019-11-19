@@ -26,6 +26,7 @@ bool is_callback_ar_marker_data = false;//ar marker data가 있을 때만 GoToAr
 double dist_sum, ang_sum, dist_mean, sort_dist_mean, ang_mean, sort_ang_mean, dist_var, ang_var, dist_stdev, ang_stdev, y_dist, sort_y_dist;
 double dist_data[AR_MARKER_COUNT];
 double ang_data[AR_MARKER_COUNT];
+int ar_marker_id = 0;
 
 void PrintDistance(double* data)
 {
@@ -105,7 +106,7 @@ void BebopArMarkerTrack::ArMarkerPoseCallback(const ar_track_alvar_msgs::AlvarMa
     static bool get_once_ar_marker_data = true; // ar marker data를 한번만 받기위한 bool값
     static int count = 0;
     double roll, pitch, yaw;//armarker에서 반환해주는 quaternion값을 roll,pitch,yaw로 바꿔주면 pitch값을 이용해 bebop의 각도를 틀어준다.
-    int ar_marker_id = 0;
+
 
     /*
         geometry_msgs/Quaternion.msg
@@ -138,62 +139,62 @@ void BebopArMarkerTrack::ArMarkerPoseCallback(const ar_track_alvar_msgs::AlvarMa
             tf::Matrix3x3(quaternion).getRPY(roll, pitch, yaw);//Get the matrix represented as roll pitch and yaw about fixed axes XYZ.
 
 
-            if(get_once_ar_marker_data)
-            {
-                dist_data[count] = alvar_marker_message->markers[i].pose.pose.position.z;//bebop2와 ar marker사이의 거리
-                ang_data[count] = pitch;//bebop이랑 ar마커랑 yaw값 관계가 pitch(radian)로 나온다.
-
-                if(count >= (AR_MARKER_COUNT - 1))
-                {
-
-                    dist_sum = Sum(dist_data, AR_MARKER_COUNT);//거리 합
-                    dist_mean = Mean(dist_data, AR_MARKER_COUNT);//거리 평균
-                    dist_var = Var(dist_data, AR_MARKER_COUNT);//거리 분산
-                    dist_stdev = Stdev(dist_data, AR_MARKER_COUNT);//거리 표준편차
-                    ang_sum = Sum(ang_data, AR_MARKER_COUNT);//각도 합
-                    ang_mean = Mean(ang_data, AR_MARKER_COUNT);//각도 평균
-                    ang_var = Var(ang_data, AR_MARKER_COUNT);//각도 분산
-                    ang_stdev = Stdev(ang_data, AR_MARKER_COUNT);//각도 표준편차
-                    y_dist = dist_mean * sin(ang_mean);//y축 방향으로 이동 할 거리
-
-
-
-                    PrintDistance(dist_data);//정렬 전
-                    PrintAngle(ang_data);
-                    std::cout << std::endl;
-
-                    std::sort(dist_data, dist_data + AR_MARKER_COUNT);
-                    std::sort(ang_data, ang_data + AR_MARKER_COUNT);
-                    sort_dist_mean = SortMean(AR_MARKER_COUNT*2/5, AR_MARKER_COUNT*3/5, dist_data);//정렬한 값 중 2/5 ~ 3/5 사이에 있는 값들만 더해서 평균을 낸다.
-                    sort_ang_mean = SortMean(AR_MARKER_COUNT*2/5, AR_MARKER_COUNT*3/5, ang_data);
-                    sort_y_dist = sort_dist_mean * sin(sort_ang_mean);
-
-                    PrintDistance(dist_data);//정렬 후
-                    PrintAngle(ang_data);
-
-                    ROS_INFO("AR MARKER ID : %d", ar_marker_id);
-                    ROS_INFO("DIST SUM: %lf", dist_sum);
-                    ROS_INFO("DIST MEAN: %lf", dist_mean);
-                    ROS_INFO("SORT DIST MEAN: %lf", sort_dist_mean);
-                    ROS_INFO("DIST VAR: %lf", dist_var);
-                    ROS_INFO("DIST STDEV: %lf", dist_stdev);
-                    ROS_INFO("----------");
-                    ROS_INFO("ANG SUM: %lf", ang_sum*(180.0/M_PI));
-                    ROS_INFO("ANG MEAN: %lf", ang_mean*(180.0/M_PI));
-                    ROS_INFO("SORT ANG MEAN: %lf", sort_ang_mean*(180.0/M_PI));
-                    ROS_INFO("ANG VAR: %lf", ang_var*(180.0/M_PI));
-                    ROS_INFO("ANG STDEV: %lf", ang_stdev*(180.0/M_PI));
-                    ROS_INFO("----------");
-                    ROS_INFO("MOVE DISTANCE(y_dist): %lf", y_dist);
-                    ROS_INFO("SORT MOVE DISTANCE(y_dist): %lf", sort_y_dist);
-                    ROS_INFO("----------");
-
-                    //set
-                    start_go_to_ar_marker = true;
-                    get_once_ar_marker_data = false;
-                }
-                ++count;
-            }
+            // if(get_once_ar_marker_data)
+            // {
+            //     dist_data[count] = alvar_marker_message->markers[i].pose.pose.position.z;//bebop2와 ar marker사이의 거리
+            //     ang_data[count] = pitch;//bebop이랑 ar마커랑 yaw값 관계가 pitch(radian)로 나온다.
+            //
+            //     if(count >= (AR_MARKER_COUNT - 1))
+            //     {
+            //
+            //         dist_sum = Sum(dist_data, AR_MARKER_COUNT);//거리 합
+            //         dist_mean = Mean(dist_data, AR_MARKER_COUNT);//거리 평균
+            //         dist_var = Var(dist_data, AR_MARKER_COUNT);//거리 분산
+            //         dist_stdev = Stdev(dist_data, AR_MARKER_COUNT);//거리 표준편차
+            //         ang_sum = Sum(ang_data, AR_MARKER_COUNT);//각도 합
+            //         ang_mean = Mean(ang_data, AR_MARKER_COUNT);//각도 평균
+            //         ang_var = Var(ang_data, AR_MARKER_COUNT);//각도 분산
+            //         ang_stdev = Stdev(ang_data, AR_MARKER_COUNT);//각도 표준편차
+            //         y_dist = dist_mean * sin(ang_mean);//y축 방향으로 이동 할 거리
+            //
+            //
+            //
+            //         PrintDistance(dist_data);//정렬 전
+            //         PrintAngle(ang_data);
+            //         std::cout << std::endl;
+            //
+            //         std::sort(dist_data, dist_data + AR_MARKER_COUNT);
+            //         std::sort(ang_data, ang_data + AR_MARKER_COUNT);
+            //         sort_dist_mean = SortMean(AR_MARKER_COUNT*2/5, AR_MARKER_COUNT*3/5, dist_data);//정렬한 값 중 2/5 ~ 3/5 사이에 있는 값들만 더해서 평균을 낸다.
+            //         sort_ang_mean = SortMean(AR_MARKER_COUNT*2/5, AR_MARKER_COUNT*3/5, ang_data);
+            //         sort_y_dist = sort_dist_mean * sin(sort_ang_mean);
+            //
+            //         PrintDistance(dist_data);//정렬 후
+            //         PrintAngle(ang_data);
+            //
+            //         ROS_INFO("AR MARKER ID : %d", ar_marker_id);
+            //         ROS_INFO("DIST SUM: %lf", dist_sum);
+            //         ROS_INFO("DIST MEAN: %lf", dist_mean);
+            //         ROS_INFO("SORT DIST MEAN: %lf", sort_dist_mean);
+            //         ROS_INFO("DIST VAR: %lf", dist_var);
+            //         ROS_INFO("DIST STDEV: %lf", dist_stdev);
+            //         ROS_INFO("----------");
+            //         ROS_INFO("ANG SUM: %lf", ang_sum*(180.0/M_PI));
+            //         ROS_INFO("ANG MEAN: %lf", ang_mean*(180.0/M_PI));
+            //         ROS_INFO("SORT ANG MEAN: %lf", sort_ang_mean*(180.0/M_PI));
+            //         ROS_INFO("ANG VAR: %lf", ang_var*(180.0/M_PI));
+            //         ROS_INFO("ANG STDEV: %lf", ang_stdev*(180.0/M_PI));
+            //         ROS_INFO("----------");
+            //         ROS_INFO("MOVE DISTANCE(y_dist): %lf", y_dist);
+            //         ROS_INFO("SORT MOVE DISTANCE(y_dist): %lf", sort_y_dist);
+            //         ROS_INFO("----------");
+            //
+            //         //set
+            //         start_go_to_ar_marker = true;
+            //         get_once_ar_marker_data = false;
+            //     }
+            //     ++count;
+            // }
 
             is_callback_ar_marker_data = true;
 
@@ -230,22 +231,24 @@ void BebopArMarkerTrack::ArMarkerPoseCallback(const ar_track_alvar_msgs::AlvarMa
             // ROS_INFO("save rpy angles(radian): pitch=%f", ang_mean);
             // ROS_INFO("save rpy angles(degree): pitch=%f", ang_mean*(180.0/M_PI));
             // ROS_INFO("----------");
-            ROS_INFO("Ar Marker id: %d", alvar_marker_message->markers[i].id);
-            ROS_INFO("current Ar Marker position x: %lf", alvar_marker_message->markers[i].pose.pose.position.x);
+            // ROS_INFO("Ar Marker id: %d", alvar_marker_message->markers[i].id);
+            // ROS_INFO("current Ar Marker position x: %lf", alvar_marker_message->markers[i].pose.pose.position.x);
             // ROS_INFO("current Ar Marker position y: %lf", alvar_marker_message->markers[i].pose.pose.position.y);
-            ROS_INFO("current Ar Marker position z: %lf", alvar_marker_message->markers[i].pose.pose.position.z);
+            // ROS_INFO("current Ar Marker position z: %lf", alvar_marker_message->markers[i].pose.pose.position.z);
             // ROS_INFO("current rpy angles(degree): roll=%f", roll*(180.0/M_PI));
-            ROS_INFO("current rpy angles(degree): pitch=%f", pitch*(180.0/M_PI));
+            // ROS_INFO("current rpy angles(degree): pitch=%f", pitch*(180.0/M_PI));
             // ROS_INFO("current rpy angles(degree): yaw=%f", yaw*(180.0/M_PI));
-            ROS_INFO("current quaternion angles(radian): x = %f", alvar_marker_message->markers[i].pose.pose.orientation.x);
-            ROS_INFO("current quaternion angles(radian): y = %f", alvar_marker_message->markers[i].pose.pose.orientation.y);
-            ROS_INFO("current quaternion angles(radian): z = %f", alvar_marker_message->markers[i].pose.pose.orientation.z);
-            ROS_INFO("current quaternion angles(radian): w = %f", alvar_marker_message->markers[i].pose.pose.orientation.w);
-            ROS_INFO("----------");
-
+            // ROS_INFO("current quaternion angles(radian): x = %f", alvar_marker_message->markers[i].pose.pose.orientation.x);
+            // ROS_INFO("current quaternion angles(radian): y = %f", alvar_marker_message->markers[i].pose.pose.orientation.y);
+            // ROS_INFO("current quaternion angles(radian): z = %f", alvar_marker_message->markers[i].pose.pose.orientation.z);
+            // ROS_INFO("current quaternion angles(radian): w = %f", alvar_marker_message->markers[i].pose.pose.orientation.w);
+            // ROS_INFO("----------");
+            continue;
         }
     }
-
+    // find_ar_marker = false;
+    // is_callback_ar_marker_data = false;
+    // search_ar_marker = true;
 }
 
 void BebopArMarkerTrack::GoToArMarker()
@@ -256,74 +259,133 @@ void BebopArMarkerTrack::GoToArMarker()
         3.bebop을 좌우로 움직여 ar marker를 일직선 상에서 바라보게 맞추고
         4.bebop을 앞으로 움직여 ar marker 앞으로 이동한다.
     */
-    for(int i=0; i<alvar_marker_message->markers.size(); i++) {
-        if(i==0){
 
-            if(alvar_marker_message->markers[0].pose.pose.position.y >= 0.0)//marker의 position.y가 +이면 bebop이 아래로 이동
-            {
-                bebop_control_message.linear.z = -LINEAR_SPEED;
-                bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
-                ROS_INFO("GO DOWN!!!");
-                continue;
-            }
+    ros::Duration time(3.0);
+    ros::Rate loop_rate(100);
 
-            if(fabs(alvar_marker_message->markers[0].pose.pose.position.x) > 0.01)//marker의 position.x가 -0.01 ~ 0.01 사이를 벗어나 있으면 동작
+    static bool first_step = true;
+    static bool second_step = false;
+    static bool third_step = false;
+    static bool fourth_step = false;
+
+    for(int i=0; i<alvar_marker_message->markers.size(); i++)
+    {
+        if(ar_marker_id == alvar_marker_message->markers[i].id)
+        {
+            if(first_step)
             {
-                if(alvar_marker_message->markers[0].pose.pose.position.x < 0.0)//marker의 position.x가 -이면 bebop이 왼쪽으로 이동
+                // if(fabs(alvar_marker_message->markers[0].pose.pose.position.y) > 0.02)
+                // {
+                //     if(alvar_marker_message->markers[0].pose.pose.position.y >= 0.0)//marker의 position.y가 +이면 bebop이 아래로 이동
+                //     {
+                //         bebop_control_message.linear.z = -LINEAR_SPEED;
+                //         bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
+                //         ROS_INFO("GO DOWN!!!");
+                //         ros::spinOnce();
+                //         loop_rate.sleep();
+                //         continue;
+                //     }
+                //     else if(alvar_marker_message->markers[0].pose.pose.position.y < 0.0)//marker의 position.y가 +이면 bebop이 아래로 이동
+                //     {
+                //         bebop_control_message.linear.z = LINEAR_SPEED;
+                //         bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
+                //         ROS_INFO("GO DOWN!!!");
+                //         ros::spinOnce();
+                //         loop_rate.sleep();
+                //         continue;
+                //     }
+                // }
+
+                if(fabs(alvar_marker_message->markers[0].pose.pose.orientation.z) > 0.01)
                 {
-                    bebop_control_message.linear.y = LINEAR_SPEED;
-                    bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
-                    ROS_INFO("GO LEFT!!!");
-
-                    /*if(alvar_marker_message->markers[0].pose.pose.orientation.w < 0.0)//marker의 orientation.w가 -이면 오른쪽 회전
+                    if(alvar_marker_message->markers[0].pose.pose.orientation.z < 0.0)//marker의 orientation.z가 -이면 오른쪽 회전
                     {
-                        bebop_control_message.angular.z = -ANGULAR_SPEED;
+                        bebop_control_message.angular.z = -ANGULAR_SPEED/3;
                         bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
                         ROS_INFO("TURN RIGHT!!!");
-                        //continue;
+                        ros::spinOnce();
+                        loop_rate.sleep();
+                        continue;
                     }
-                    else if(alvar_marker_message->markers[0].pose.pose.orientation.w >= 0.0)//marker의 orientation.w가 +이면 왼쪽 회전
+                    else if(alvar_marker_message->markers[0].pose.pose.orientation.z >= 0.0)//marker의 orientation.z가 +이면 왼쪽 회전
                     {
-                        bebop_control_message.angular.z = ANGULAR_SPEED;
+                        bebop_control_message.angular.z = ANGULAR_SPEED/3;
                         bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
                         ROS_INFO("TURN LEFT!!!");
-                        //continue;
-                    }*/
-                    continue;
-                }
-                else if(alvar_marker_message->markers[0].pose.pose.position.x >= 0.0)//marker의 position.x가 +이면 bebop이 오른쪽으로 이동
-                {
-                    bebop_control_message.linear.y = -LINEAR_SPEED;
-                    bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
-                    ROS_INFO("GO RIGHT!!!");
-
-                    /*if(alvar_marker_message->markers[0].pose.pose.orientation.w < 0.0)//marker의 orientation.w가 -이면 오른쪽 회전
-                    {
-                        bebop_control_message.angular.z = -ANGULAR_SPEED;
-                        bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
-                        ROS_INFO("TURN RIGHT!!!");
-                        //continue;
+                        ros::spinOnce();
+                        loop_rate.sleep();
+                        continue;
                     }
-                    else if(alvar_marker_message->markers[0].pose.pose.orientation.w >= 0.0)//marker의 orientation.w가 +이면 왼쪽 회전
-                    {
-                        bebop_control_message.angular.z = ANGULAR_SPEED;
-                        bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
-                        ROS_INFO("TURN LEFT!!!");
-                        //continue;
-                    }*/
-                    continue;
                 }
+                bebop_control_message.angular.z = 0;
+                bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
+                time.sleep();
+                first_step = false;
+                second_step = true;
             }
 
-            //position.z 0.2 = 20cm
-            if(alvar_marker_message->markers[0].pose.pose.position.z >= 1.5)//marker의 position.z가 0.5보다 크면 bebop이 앞으로 이동
+            if(second_step)
             {
-                bebop_control_message.linear.x = LINEAR_SPEED;
+                if(fabs(alvar_marker_message->markers[0].pose.pose.position.x) > 0.01)//marker의 position.x가 -0.01 ~ 0.01 사이를 벗어나 있으면 동작
+                {
+                    if(alvar_marker_message->markers[0].pose.pose.position.x < 0.0)//marker의 position.x가 -이면 bebop이 왼쪽으로 이동
+                    {
+                        bebop_control_message.linear.y = LINEAR_SPEED/5;
+                        bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
+                        ROS_INFO("GO LEFT!!!");
+                        ros::spinOnce();
+                        loop_rate.sleep();
+                        continue;
+                    }
+                    else if(alvar_marker_message->markers[0].pose.pose.position.x >= 0.0)//marker의 position.x가 +이면 bebop이 오른쪽으로 이동
+                    {
+                        bebop_control_message.linear.y = -LINEAR_SPEED/5;
+                        bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
+                        ROS_INFO("GO RIGHT!!!");
+                        ros::spinOnce();
+                        loop_rate.sleep();
+                        continue;
+                    }
+                }
+                bebop_control_message.linear.y = 0;
                 bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
-                ROS_INFO("GO FRONT!!!");
+                time.sleep();
+                second_step = false;
+                third_step = true;
+            }
+
+            if(third_step)
+            {
+                //position.z 0.5 = 50cm
+                if(alvar_marker_message->markers[0].pose.pose.position.z >= 2.0)//marker의 position.z가 0.5보다 크면 bebop이 앞으로 이동
+                {
+                    bebop_control_message.linear.x = LINEAR_SPEED/5;
+                    bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
+                    ROS_INFO("GO FRONT!!!");
+                    ros::spinOnce();
+                    loop_rate.sleep();
+                    continue;
+                }
+                else
+                {
+                    bebop_control_message.linear.x = 0;
+                    bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
+                    ROS_INFO("FINISH GO AR MARKER...");
+                    // time.sleep();
+                    // land_publisher.publish(empty_message);
+                    for(int i = 0; i < 1000; ++i)
+                    {
+                        bebop_control_message.linear.z = LINEAR_SPEED*3;
+                        bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
+                    }
+                    node_handle.setParam(go_ar_marker_key, end_go_ar_marker);
+                    node_handle.setParam(go_home_key, go_home);
+                }
+                third_step = false;
             }
         }
     }
+
 }
 
 void BebopArMarkerTrack::GoToArMarker2()
@@ -504,12 +566,13 @@ void BebopArMarkerTrack::GoToArMarker2()
 
 void BebopArMarkerTrack::SearchArMarker()
 {
+    ros::Duration time(3.0);
     ros::Rate loop_rate(50);
     find_ar_marker = false;
     while(ros::ok())
     {
         ROS_INFO("search AR marker...");
-        bebop_control_message.angular.z =  ANGULAR_SPEED*3;
+        bebop_control_message.angular.z =  ANGULAR_SPEED;
         bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
         ros::spinOnce();
         loop_rate.sleep();
@@ -519,7 +582,7 @@ void BebopArMarkerTrack::SearchArMarker()
           ROS_INFO("find AR marker...");
           bebop_control_message.angular.z = 0;
           bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
-          loop_rate.sleep();
+          time.sleep();
           search_ar_marker = false;
           break;
         }
@@ -543,15 +606,15 @@ void BebopArMarkerTrack::Action()
         //does_go_ar_marker는 bebop이 gps위치에 도착하면 true가 된다.
         //gps위치에 도착하면 ar마커를 찾기 시작한다.
         //ar마커를 찾으면 search_ar_marker가 false가 된다.
-        // if(search_ar_marker /*&& does_go_ar_marker*/)
-        // {
-        //     SearchArMarker();
-        // }
+        if(search_ar_marker /*&& does_go_ar_marker*/)
+        {
+            SearchArMarker();
+        }
         //
-        // if(is_callback_ar_marker_data && start_go_to_ar_marker /*&& does_go_ar_marker*/)
-        // {
-        //     GoToArMarker2();
-        // }
+        if(is_callback_ar_marker_data /*&& start_go_to_ar_marker*/ /*&& does_go_ar_marker*/)
+        {
+            GoToArMarker();
+        }
 
         ros::spinOnce();
         loop_rate.sleep();
