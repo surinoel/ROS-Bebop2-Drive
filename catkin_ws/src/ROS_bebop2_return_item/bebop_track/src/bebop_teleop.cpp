@@ -60,7 +60,7 @@ void BebopKeyBoardController::_printInterface()
     << "\tTracking Mode : " << (_isTracking ? "ON" : "OFF") << std::endl;
     std::cout << "[Home GPS] latitude : " << home_gps_latitude << " ,longitude : " << home_gps_longitude << std::endl;
     std::cout << "[Drone GPS] latitude : " << drone_gps_latitude << " ,longitude : " << drone_gps_longitude << std::endl;
-    std::cout << "[Droe GPS] altitude : " << drone_gps_altitude << std::endl;
+    std::cout << "[Drone GPS] altitude : " << drone_gps_altitude << std::endl;
     std::cout << "[Speed value] : " << _speedValue << std::endl;
     std::cout << "[Speed Increase Value] : " << _speedIncreaseValue << std::endl;
 }
@@ -78,7 +78,7 @@ void BebopKeyBoardController::_printGpsInterface()
     std::cout << "[status] Takeoff : "<< ((_isTakeOff) ? "ON" : "OFF")
     << "\tGPS Mode : " << (_isGPS ? "ON" : "OFF") << std::endl;
     std::cout << "[Home GPS] latitude : " << home_gps_latitude << " ,longitude : " << home_gps_longitude << std::endl;
-    std::cout << "[Drome GPS] latitude : " << drone_gps_latitude << " ,longitude : " << drone_gps_longitude << std::endl;
+    std::cout << "[Drone GPS] latitude : " << drone_gps_latitude << " ,longitude : " << drone_gps_longitude << std::endl;
 }
 
 void BebopKeyBoardController::_move(double &value, int orientation)
