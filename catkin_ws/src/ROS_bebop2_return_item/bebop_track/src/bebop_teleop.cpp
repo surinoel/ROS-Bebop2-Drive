@@ -4,7 +4,7 @@
 const char* BebopKeyBoardController::Interface[] = {
         "+-----------------------------------------------------+",
         "|                 Control your Bebop                  |",
-        "|        W      R                            8        |",
+        "|        W                                   8        |",
         "|                                                     |",
         "|    A   S   D  F  G                     4   5   6    |",
         "|                                                     |",
@@ -13,7 +13,6 @@ const char* BebopKeyBoardController::Interface[] = {
         "| FORWARD / BACKWARD : 8 / 5                          |",
         "| LEFT / RIGHT       : 4 / 6                          |",
         "| TAKE OFF / LAND    : Spacebar                       |",
-        "| Tracking Mode      : T                              |",
         "| GPS Mode On        : G                              |",
         "| Emergency          : P                              |",
         "| Quit               : Q                              |",
@@ -54,7 +53,7 @@ void BebopKeyBoardController::_printInterface()
     _nodeHandle.getParam(drone_gps_longitude_key, drone_gps_longitude);
     _nodeHandle.getParam(drone_gps_altitude_key, drone_gps_altitude);
     int result = system("clear");
-    for(int i = 0; i < 16; ++i)
+    for(int i = 0; i < 15; ++i)
         std::cout << Interface[i] << std::endl;
     std::cout << "[status] Takeoff : "<< ((_isTakeOff) ? "ON" : "OFF")
     << "\tTracking Mode : " << (_isTracking ? "ON" : "OFF") << std::endl;

@@ -146,35 +146,34 @@ void BebopArMarkerTrack::ArMarkerPoseCallback(const ar_track_alvar_msgs::AlvarMa
         if((ar_marker_id == alvar_marker_message->markers[i].id) && set_altitude == false)
         {
             find_ar_marker = true;
-
+            // (orientation.z: -, x: -) 또는 (orientation.z: +, x: +)가 아니라면 드론 z축을 회전시켜 (orientation.z: -, x: -) 또는 (orientation.z: +, x: +)의 조건으로 맞춘다.
             if(ar_first)
             {
-              if(alvar_marker_message->markers[i].pose.pose.orientation.z < 0.0 && alvar_marker_message->markers[i].pose.pose.position.x >=0)
-              {
-                  ROS_INFO("set angle...");
-                  bebop_control_message.angular.z = -ANGULAR_SPEED;
-                  bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
-                  ros::spinOnce();
-                  loop_rate.sleep();
-                  continue;
-              }
-              else if(alvar_marker_message->markers[i].pose.pose.orientation.z >= 0.0 && alvar_marker_message->markers[i].pose.pose.position.x < 0)
-              {
-                  ROS_INFO("set angle...");
-                  bebop_control_message.angular.z = ANGULAR_SPEED;
-                  bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
-                  ros::spinOnce();
-                  loop_rate.sleep();
-                  continue;
-              }
-              bebop_control_message.linear.x = 0;
-              bebop_control_message.linear.y = 0;
-              bebop_control_message.linear.z = 0;
-              bebop_control_message.angular.z = 0.0;
-              bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
-              // loop_rate.sleep();
-              ar_first = false;
-              time.sleep();
+                if(alvar_marker_message->markers[i].pose.pose.orientation.z < 0.0 && alvar_marker_message->markers[i].pose.pose.position.x >=0)
+                {
+                    ROS_INFO("set angle...");
+                    bebop_control_message.angular.z = -ANGULAR_SPEED;
+                    bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
+                    ros::spinOnce();
+                    loop_rate.sleep();
+                    continue;
+                }
+                else if(alvar_marker_message->markers[i].pose.pose.orientation.z >= 0.0 && alvar_marker_message->markers[i].pose.pose.position.x < 0)
+                {
+                    ROS_INFO("set angle...");
+                    bebop_control_message.angular.z = ANGULAR_SPEED;
+                    bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
+                    ros::spinOnce();
+                    loop_rate.sleep();
+                    continue;
+                }
+                bebop_control_message.linear.x = 0;
+                bebop_control_message.linear.y = 0;
+                bebop_control_message.linear.z = 0;
+                bebop_control_message.angular.z = 0.0;
+                bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
+                ar_first = false;
+                time.sleep();
             }
 
             quaternion_msg.x = alvar_marker_message->markers[i].pose.pose.orientation.x;
@@ -185,7 +184,7 @@ void BebopArMarkerTrack::ArMarkerPoseCallback(const ar_track_alvar_msgs::AlvarMa
             tf::quaternionMsgToTF(quaternion_msg, quaternion);//convert Quaternion msg to Quaternion
             tf::Matrix3x3(quaternion).getRPY(roll, pitch, yaw);//Get the matrix represented as roll pitch and yaw about fixed axes XYZ.
 
-
+            //AR 마커의 데이터를 AR_MARKER_COUNT 만큼 받아 오름차순으로 정렬 후 앞, 뒤 튀는 값들을 제외한 가운데 값들의 평균을 구한다.
             if(get_once_ar_marker_data)
             {
                 ROS_INFO("Collect data...");
@@ -298,7 +297,7 @@ void BebopArMarkerTrack::ArMarkerPoseCallback(const ar_track_alvar_msgs::AlvarMa
 }
 
 
-void BebopArMarkerTrack::GoToArMarker2()
+void BebopArMarkerTrack::GoToArMarker()
 {
     ros::Duration time(2);
     ros::Rate loop_rate(50);
@@ -477,7 +476,6 @@ void BebopArMarkerTrack::GoToArMarker2()
                     bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
 
                     time.sleep();
-                    // land_publisher.publish(empty_message);
                     node_handle.setParam(go_ar_marker_key, end_go_ar_marker);
                     node_handle.setParam(select_place_key, select_place);
                     node_handle.setParam(go_place_key, go_place);
@@ -577,17 +575,18 @@ void BebopArMarkerTrack::Action()
         {
             SetAltitude();
         }
-        //does_go_ar_marker는 bebop이 gps위치에 도착하면 true가 된다.
-        //gps위치에 도착하면 ar마커를 찾기 시작한다.
-        //ar마커를 찾으면 search_ar_marker가 false가 된다.
+
         if(search_ar_marker /*&& does_go_ar_marker*/)
         {
+            //does_go_ar_marker는 bebop이 gps위치에 도착하면 true가 된다.
+            //gps위치에 도착하면 ar마커를 찾기 시작한다.
+            //ar마커를 찾으면 search_ar_marker가 false가 된다.
             SearchArMarker();
         }
-        //
+        
         if(is_callback_ar_marker_data && start_go_to_ar_marker /*&& does_go_ar_marker*/)
         {
-            GoToArMarker2();
+            GoToArMarker();
         }
 
         ros::spinOnce();

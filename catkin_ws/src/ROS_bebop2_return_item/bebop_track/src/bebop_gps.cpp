@@ -40,7 +40,7 @@ bool go_target_gps_set = true;
 int num = 0;
 int select_place = 0;
 ////////////////////////////////////////////
-void BebopGlobalPositioningSystem::CurrentGpsCallback(const bebop_msgs::Ardrone3PilotingStatePositionChanged& current_gps)
+void BebopGlobalPositioningSystem::CurrentGpsCallback(const bebop_msgs::Ardrone3PilotingStatePositionChanged& position_changed)
 {
     ros::Rate loop_rate(100);
 
@@ -51,18 +51,18 @@ void BebopGlobalPositioningSystem::CurrentGpsCallback(const bebop_msgs::Ardrone3
     {
         if(ready_to_get_home_gps) // 처음 이륙한 위치를 home위치로 설정
         {
-            home_position.latitude = current_gps.latitude;
-            home_position.longitude = current_gps.longitude;
-            home_position.altitude = current_gps.altitude;
+            home_position.latitude = position_changed.latitude;
+            home_position.longitude = position_changed.longitude;
+            home_position.altitude = position_changed.altitude;
             node_handle.setParam(home_gps_latitude_key, home_position.latitude);//사용자 인터페이스 화면에 표시해주기 위해서
             node_handle.setParam(home_gps_longitude_key, home_position.longitude);//사용자 인터페이스 화면에 표시해주기 위해서
             node_handle.setParam(home_gps_longitude_key, home_position.altitude);
             ready_to_get_home_gps = false; //home_position 값을 다시 받지 않기 위해 ready_to_get_home_gps를 false로 변경
         }
 
-        current_position.latitude  = current_gps.latitude;//위도
-        current_position.longitude = current_gps.longitude;//경도
-        current_position.altitude = current_gps.altitude;//고도
+        current_position.latitude  = position_changed.latitude;//위도
+        current_position.longitude = position_changed.longitude;//경도
+        current_position.altitude = position_changed.altitude;//고도
         node_handle.setParam(drone_gps_latitude_key, current_position.latitude);
         node_handle.setParam(drone_gps_longitude_key, current_position.longitude);
         node_handle.setParam(drone_gps_altitude_key, current_position.altitude);
