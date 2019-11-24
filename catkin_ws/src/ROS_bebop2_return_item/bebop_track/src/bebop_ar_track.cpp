@@ -12,7 +12,7 @@
 
 #define LINEAR_SPEED            0.1
 #define ANGULAR_SPEED           0.1
-#define AR_MARKER_COUNT         50
+#define AR_MARKER_COUNT         60
 #define CW                      -1
 #define CCW                     1
 #define RIGHT                   -1
@@ -104,10 +104,14 @@ double Stdev(double data[], int count)
     return ( sqrt(Var(data, count)) );
 }
 
+void BebopArMarkerTrack::AltitudeCallback(const bebop_msgs::Ardrone3PilotingStateAltitudeChanged& alti)
+{
+    altitude_message.altitude = alti.altitude;
+}
+
 void BebopArMarkerTrack::OdometryCallback(const nav_msgs::Odometry& odom)
 {
     odometry_message.twist.twist.linear.y = odom.twist.twist.linear.y;
-    odometry_message.pose.pose.position.z = odom.pose.pose.position.z;
 }
 
 void BebopArMarkerTrack::ArMarkerPoseCallback(const ar_track_alvar_msgs::AlvarMarkers::ConstPtr& ar_marker)
@@ -139,7 +143,7 @@ void BebopArMarkerTrack::ArMarkerPoseCallback(const ar_track_alvar_msgs::AlvarMa
 
         ar_marker_id = 9;//추후 ar_marker_id_key 파라미터에 들어있는 값을 받도록 바꿀 예정
         // node_handle.getParam(ar_marker_id_key, ar_marker_id);// ar_marker_id_key에 들어있는 AR marker id 값을 ar_marker_id에 넣는다.
-        if(ar_marker_id == alvar_marker_message->markers[i].id)
+        if((ar_marker_id == alvar_marker_message->markers[i].id) && set_altitude == false)
         {
             find_ar_marker = true;
 
@@ -163,7 +167,9 @@ void BebopArMarkerTrack::ArMarkerPoseCallback(const ar_track_alvar_msgs::AlvarMa
                   loop_rate.sleep();
                   continue;
               }
-
+              bebop_control_message.linear.x = 0;
+              bebop_control_message.linear.y = 0;
+              bebop_control_message.linear.z = 0;
               bebop_control_message.angular.z = 0.0;
               bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
               // loop_rate.sleep();
@@ -214,22 +220,22 @@ void BebopArMarkerTrack::ArMarkerPoseCallback(const ar_track_alvar_msgs::AlvarMa
                     PrintDistance(dist_data);//정렬 후
                     PrintAngle(ang_data);
 
-                    ROS_INFO("AR MARKER ID : %d", ar_marker_id);
-                    ROS_INFO("DIST SUM: %lf", dist_sum);
-                    ROS_INFO("DIST MEAN: %lf", dist_mean);
-                    ROS_INFO("SORT DIST MEAN: %lf", sort_dist_mean);
-                    ROS_INFO("DIST VAR: %lf", dist_var);
-                    ROS_INFO("DIST STDEV: %lf", dist_stdev);
-                    ROS_INFO("----------");
-                    ROS_INFO("ANG SUM: %lf", ang_sum*(180.0/M_PI));
-                    ROS_INFO("ANG MEAN: %lf", ang_mean*(180.0/M_PI));
-                    ROS_INFO("SORT ANG MEAN: %lf", sort_ang_mean*(180.0/M_PI));
-                    ROS_INFO("ANG VAR: %lf", ang_var*(180.0/M_PI));
-                    ROS_INFO("ANG STDEV: %lf", ang_stdev*(180.0/M_PI));
-                    ROS_INFO("----------");
-                    ROS_INFO("MOVE DISTANCE(y_dist): %lf", y_dist);
-                    ROS_INFO("SORT MOVE DISTANCE(y_dist): %lf", sort_y_dist);
-                    ROS_INFO("----------");
+                    // ROS_INFO("AR MARKER ID : %d", ar_marker_id);
+                    // ROS_INFO("DIST SUM: %lf", dist_sum);
+                    // ROS_INFO("DIST MEAN: %lf", dist_mean);
+                    // ROS_INFO("SORT DIST MEAN: %lf", sort_dist_mean);
+                    // ROS_INFO("DIST VAR: %lf", dist_var);
+                    // ROS_INFO("DIST STDEV: %lf", dist_stdev);
+                    // ROS_INFO("----------");
+                    // ROS_INFO("ANG SUM: %lf", ang_sum*(180.0/M_PI));
+                    // ROS_INFO("ANG MEAN: %lf", ang_mean*(180.0/M_PI));
+                    // ROS_INFO("SORT ANG MEAN: %lf", sort_ang_mean*(180.0/M_PI));
+                    // ROS_INFO("ANG VAR: %lf", ang_var*(180.0/M_PI));
+                    // ROS_INFO("ANG STDEV: %lf", ang_stdev*(180.0/M_PI));
+                    // ROS_INFO("----------");
+                    // ROS_INFO("MOVE DISTANCE(y_dist): %lf", y_dist);
+                    // ROS_INFO("SORT MOVE DISTANCE(y_dist): %lf", sort_y_dist);
+                    // ROS_INFO("----------");
 
                     //set
                     start_go_to_ar_marker = true;
@@ -330,16 +336,16 @@ void BebopArMarkerTrack::GoToArMarker2()
         while(ros::Time::now() < time2end)//현재 시간이 종료 시간보다 작으면 while문을 실행한다.
         {
             ROS_INFO("SET ANGLE");
-            ROS_INFO("start time: %lf", start_time.toSec());
-            ROS_INFO("end time: %lf", time2end.toSec());
-            ROS_INFO("current time: %lf", ros::Time::now().toSec());
-            ROS_INFO("----------");
+            // ROS_INFO("start time: %lf", start_time.toSec());
+            // ROS_INFO("end time: %lf", time2end.toSec());
+            // ROS_INFO("current time: %lf", ros::Time::now().toSec());
+            // ROS_INFO("----------");
             bebop_control_message.angular.z = (direction_of_rotation * ANGULAR_SPEED);
-            ROS_INFO("turn time: %lf", turn_time);
-            ROS_INFO("turn angle: %lf", angle);
-            ROS_INFO("y dist: %lf", y_dist);
-            ROS_INFO("rotation direct: %d", direction_of_rotation);
-            ROS_INFO("bebop angular z speed: %lf", bebop_control_message.angular.z);
+            // ROS_INFO("turn time: %lf", turn_time);
+            // ROS_INFO("turn angle: %lf", angle);
+            // ROS_INFO("y dist: %lf", y_dist);
+            // ROS_INFO("rotation direct: %d", direction_of_rotation);
+            // ROS_INFO("bebop angular z speed: %lf", bebop_control_message.angular.z);
             bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
             loop_rate.sleep();
         }
@@ -353,20 +359,20 @@ void BebopArMarkerTrack::GoToArMarker2()
         while(ros::Time::now() < time2end)//현재 시간이 종료 시간보다 작으면 while문을 실행한다.
         {
             ROS_INFO("SET DIRECTION");
-            ROS_INFO("start time: %lf", start_time.toSec());
-            ROS_INFO("end time: %lf", time2end.toSec());
-            ROS_INFO("current time: %lf", ros::Time::now().toSec());
-            ROS_INFO("----------");
+            // ROS_INFO("start time: %lf", start_time.toSec());
+            // ROS_INFO("end time: %lf", time2end.toSec());
+            // ROS_INFO("current time: %lf", ros::Time::now().toSec());
+            // ROS_INFO("----------");
 
             double current_time2go = fabs(y_dist) / fabs(odometry_message.twist.twist.linear.y);
             if(fabs(odometry_message.twist.twist.linear.y) < LINEAR_SPEED || current_time2go > go_time)
             {
-                bebop_control_message.linear.y = (direction_of_movement * LINEAR_SPEED);
-                ROS_INFO("go time: %lf", go_time);
-                ROS_INFO("turn angle: %lf", angle);
-                ROS_INFO("y dist: %lf", y_dist);
-                ROS_INFO("movement direct: %d", direction_of_movement);
-                ROS_INFO("bebop linear y speed: %lf", bebop_control_message.linear.y);
+                bebop_control_message.linear.y = (direction_of_movement * LINEAR_SPEED)/2;
+                // ROS_INFO("go time: %lf", go_time);
+                // ROS_INFO("turn angle: %lf", angle);
+                // ROS_INFO("y dist: %lf", y_dist);
+                // ROS_INFO("movement direct: %d", direction_of_movement);
+                // ROS_INFO("bebop linear y speed: %lf", bebop_control_message.linear.y);
                 bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
                 loop_rate.sleep();
             }
@@ -376,23 +382,23 @@ void BebopArMarkerTrack::GoToArMarker2()
         bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
         loop_rate.sleep();
         time.sleep();
-        ROS_INFO("start time: %lf", start_time.toSec());
-        ROS_INFO("end time: %lf", time2end.toSec());
-        ROS_INFO("DIST SUM: %lf", dist_sum);
-        ROS_INFO("DIST MEAN: %lf", dist_mean);
-        ROS_INFO("SORT DIST MEAN: %lf", sort_dist_mean);
-        ROS_INFO("DIST VAR: %lf", dist_var);
-        ROS_INFO("DIST STDEV: %lf", dist_stdev);
-        ROS_INFO("----------");
-        ROS_INFO("ANG SUM: %lf", ang_sum*(180.0/M_PI));
-        ROS_INFO("ANG MEAN: %lf", ang_mean*(180.0/M_PI));
-        ROS_INFO("SORT ANG MEAN: %lf", sort_ang_mean*(180.0/M_PI));
-        ROS_INFO("ANG VAR: %lf", ang_var*(180.0/M_PI));
-        ROS_INFO("ANG STDEV: %lf", ang_stdev*(180.0/M_PI));
-        ROS_INFO("----------");
-        ROS_INFO("MOVE DISTANCE(y_dist): %lf", y_dist);
-        ROS_INFO("SORT MOVE DISTANCE(sort_y_dist): %lf", sort_y_dist);
-        ROS_INFO("----------");
+        // ROS_INFO("start time: %lf", start_time.toSec());
+        // ROS_INFO("end time: %lf", time2end.toSec());
+        // ROS_INFO("DIST SUM: %lf", dist_sum);
+        // ROS_INFO("DIST MEAN: %lf", dist_mean);
+        // ROS_INFO("SORT DIST MEAN: %lf", sort_dist_mean);
+        // ROS_INFO("DIST VAR: %lf", dist_var);
+        // ROS_INFO("DIST STDEV: %lf", dist_stdev);
+        // ROS_INFO("----------");
+        // ROS_INFO("ANG SUM: %lf", ang_sum*(180.0/M_PI));
+        // ROS_INFO("ANG MEAN: %lf", ang_mean*(180.0/M_PI));
+        // ROS_INFO("SORT ANG MEAN: %lf", sort_ang_mean*(180.0/M_PI));
+        // ROS_INFO("ANG VAR: %lf", ang_var*(180.0/M_PI));
+        // ROS_INFO("ANG STDEV: %lf", ang_stdev*(180.0/M_PI));
+        // ROS_INFO("----------");
+        // ROS_INFO("MOVE DISTANCE(y_dist): %lf", y_dist);
+        // ROS_INFO("SORT MOVE DISTANCE(sort_y_dist): %lf", sort_y_dist);
+        // ROS_INFO("----------");
         first_step = false;//첫번째 단계를 종료하고
         second_step = true;//두번째 단계로 넘어간다
         // start_go_to_ar_marker = false;
@@ -411,7 +417,7 @@ void BebopArMarkerTrack::GoToArMarker2()
                         bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
                         ros::spinOnce();
                         loop_rate.sleep();
-                        ROS_INFO("GO LEFT!!!");
+                        // ROS_INFO("GO LEFT!!!");
                         continue;
                     }
                     else if(alvar_marker_message->markers[0].pose.pose.position.x >= 0.0)//marker의 position.x가 +이면 bebop이 오른쪽으로 이동
@@ -420,7 +426,7 @@ void BebopArMarkerTrack::GoToArMarker2()
                         bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
                         ros::spinOnce();
                         loop_rate.sleep();
-                        ROS_INFO("GO RIGHT!!!");
+                        // ROS_INFO("GO RIGHT!!!");
                         continue;
                     }
                 }
@@ -450,7 +456,7 @@ void BebopArMarkerTrack::GoToArMarker2()
                     bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
                     ros::spinOnce();
                     loop_rate.sleep();
-                    ROS_INFO("GO FRONT!!!");
+                    // ROS_INFO("GO FRONT!!!");
                     continue;
                 }
                 else
@@ -459,7 +465,7 @@ void BebopArMarkerTrack::GoToArMarker2()
                     bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
                     ROS_INFO("FINISH GO AR MARKER...");
 
-                    for(static int i = 0; i < 500; ++i)//갈고리에 물건을 걸고 드론을 위로 상승시키기 위한 반복문(가상환경에서 실행 시 i를 1000으로 주면 70cm 정도 상승한다.)
+                    for(static int i = 0; i < 600; ++i)//갈고리에 물건을 걸고 드론을 위로 상승시키기 위한 반복문(가상환경에서 실행 시 i를 1000으로 주면 70cm 정도 상승한다.)
                     {
                           bebop_control_message.linear.z = LINEAR_SPEED;
                           bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
@@ -480,7 +486,6 @@ void BebopArMarkerTrack::GoToArMarker2()
                     break;
                 }
             }
-
         }
     }
 }
@@ -494,6 +499,9 @@ void BebopArMarkerTrack::SearchArMarker()
     while(ros::ok())
     {
         ROS_INFO("search AR marker...");
+        bebop_control_message.linear.x = 0;
+        bebop_control_message.linear.y = 0;
+        bebop_control_message.linear.z = 0;
         bebop_control_message.angular.z =  ANGULAR_SPEED;
         bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
         ros::spinOnce();
@@ -502,6 +510,9 @@ void BebopArMarkerTrack::SearchArMarker()
         if(find_ar_marker)
         {
             ROS_INFO("find AR marker...");
+            bebop_control_message.linear.x = 0;
+            bebop_control_message.linear.y = 0;
+            bebop_control_message.linear.z = 0;
             bebop_control_message.angular.z = 0;
             bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
             time.sleep();
@@ -514,19 +525,36 @@ void BebopArMarkerTrack::SearchArMarker()
 
 void BebopArMarkerTrack::SetAltitude()
 {
+    ros::Duration time(5.0);
     ros::Rate loop_rate(50);
 
-    if(odometry_message.pose.pose.position.z >= 0.6)
+    for(static int j = 0; j < 100; ++j)
     {
-        bebop_control_message.linear.z = -LINEAR_SPEED;
+        ros::spinOnce();
+        loop_rate.sleep();
+    }
+
+    if(altitude_message.altitude >= 0.8)
+    {
+        // ROS_INFO("DOWN... SET ALTITUDE...");
+        // ROS_INFO("altitude: %lf", altitude_message.altitude);
+        bebop_control_message.linear.x = 0;
+        bebop_control_message.linear.y = 0;
+        bebop_control_message.linear.z = -LINEAR_SPEED/2;
         bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
         ros::spinOnce();
         loop_rate.sleep();
     }
-    else if(odometry_message.pose.pose.position.z < 0.6)
+    else if(altitude_message.altitude < 0.8)
     {
-        bebop_control_message.linear.z = 0.0;
+        ROS_INFO("FINISH SET ALTITUDE...");
+        ROS_INFO("altitude: %lf", altitude_message.altitude);
+        bebop_control_message.linear.x = 0;
+        bebop_control_message.linear.y = 0;
+        bebop_control_message.linear.z = 0;
         bebop_control_from_ar_marker_publisher.publish(bebop_control_message);
+        ros::spinOnce();
+        time.sleep();
         set_altitude = false;
         search_ar_marker = true;
     }
@@ -575,7 +603,8 @@ BebopArMarkerTrack::BebopArMarkerTrack(const ros::NodeHandle& nh)
 land_publisher(node_handle.advertise<std_msgs::Empty>("bebop/land", 1)),
 ar_marker_pose_subscriber(node_handle.subscribe(ar_marker_pose, 1, &BebopArMarkerTrack::ArMarkerPoseCallback, this)),
 current_odometry_subscriber(node_handle.subscribe(bebop_odom, 1, &BebopArMarkerTrack::OdometryCallback, this)),
-bebop_control_from_ar_marker_publisher(node_handle.advertise<geometry_msgs::Twist>("bebop/cmd_vel", 1))
+bebop_control_from_ar_marker_publisher(node_handle.advertise<geometry_msgs::Twist>("bebop/cmd_vel", 1)),
+current_altitude_subscriber(node_handle.subscribe(bebop_altitude, 1, &BebopArMarkerTrack::AltitudeCallback, this))
 {
 
 }
